@@ -8,20 +8,24 @@ def handle_client(client_socket, addr):
     print(f"Number to guess generated for {addr}.")
 
     while True:
-        data, _ = client_socket.recvfrom(1024)
-        guess = int(data.decode("utf-8"))
-        print(f"Received guess {guess} from {addr}")
+        try:
+            data, _ = client_socket.recvfrom(1024)
+            guess = int(data.decode("utf-8"))
+            print(f"Received guess {guess} from {addr}")
 
-        if guess < number_to_guess:
-            response = "Higher!"
-        elif guess > number_to_guess:
-            response = "Lower!"
-        else:
-            response = "Correct! You guessed the number!"
+            if guess < number_to_guess:
+                response = "Higher!"
+            elif guess > number_to_guess:
+                response = "Lower!"
+            else:
+                response = "Correct! You guessed the number!"
+                client_socket.sendto(response.encode("utf-8"), addr)
+                break
+
             client_socket.sendto(response.encode("utf-8"), addr)
+        except Exception as e:
+            print(f"Error: {e}")
             break
-
-        client_socket.sendto(response.encode("utf-8"), addr)
 
 
 def start_server():
